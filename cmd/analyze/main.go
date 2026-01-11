@@ -845,14 +845,13 @@ func (m model) updateKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 				}
 				count := len(m.largeMultiSelected)
 				if count > 0 {
+					largeFileMap := make(map[string]int64, len(m.largeFiles))
+					for _, file := range m.largeFiles {
+						largeFileMap[file.Path] = file.Size
+					}
 					var totalSize int64
 					for path := range m.largeMultiSelected {
-						for _, file := range m.largeFiles {
-							if file.Path == path {
-								totalSize += file.Size
-								break
-							}
-						}
+						totalSize += largeFileMap[path]
 					}
 					m.status = fmt.Sprintf("%d selected (%s)", count, humanizeBytes(totalSize))
 				} else {
@@ -871,14 +870,13 @@ func (m model) updateKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			}
 			count := len(m.multiSelected)
 			if count > 0 {
+				entryMap := make(map[string]int64, len(m.entries))
+				for _, entry := range m.entries {
+					entryMap[entry.Path] = entry.Size
+				}
 				var totalSize int64
 				for path := range m.multiSelected {
-					for _, entry := range m.entries {
-						if entry.Path == path {
-							totalSize += entry.Size
-							break
-						}
-					}
+					totalSize += entryMap[path]
 				}
 				m.status = fmt.Sprintf("%d selected (%s)", count, humanizeBytes(totalSize))
 			} else {
