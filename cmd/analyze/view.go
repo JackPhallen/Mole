@@ -369,22 +369,24 @@ func (m model) View() string {
 		var totalDeleteSize int64
 		if m.showLargeFiles && len(m.largeMultiSelected) > 0 {
 			deleteCount = len(m.largeMultiSelected)
+			largeFilesMap := make(map[string]fileEntry, len(m.largeFiles))
+			for _, file := range m.largeFiles {
+				largeFilesMap[file.Path] = file
+			}
 			for path := range m.largeMultiSelected {
-				for _, file := range m.largeFiles {
-					if file.Path == path {
-						totalDeleteSize += file.Size
-						break
-					}
+				if file, exists := largeFilesMap[path]; exists {
+					totalDeleteSize += file.Size
 				}
 			}
 		} else if !m.showLargeFiles && len(m.multiSelected) > 0 {
 			deleteCount = len(m.multiSelected)
+			entriesMap := make(map[string]dirEntry, len(m.entries))
+			for _, entry := range m.entries {
+				entriesMap[entry.Path] = entry
+			}
 			for path := range m.multiSelected {
-				for _, entry := range m.entries {
-					if entry.Path == path {
-						totalDeleteSize += entry.Size
-						break
-					}
+				if entry, exists := entriesMap[path]; exists {
+					totalDeleteSize += entry.Size
 				}
 			}
 		}
